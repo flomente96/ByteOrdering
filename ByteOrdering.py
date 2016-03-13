@@ -1,35 +1,63 @@
 import numpy
-import re
+
 
 class ByteOrdering:
-    temp = open("input.in", 'r').read().split('\n')
-    print(temp)
+    big_matrix = []
+    little_matrix = []
 
-    matrix_big = []
-    matrix_little = []
+    # Reads the file and return the content
+    def read(self):
+        temp = open("input.in", 'r').read().split('\n')
+        print("Temp: ")
+        print(temp)
+        return temp
 
-    for input in temp:
-        if input.isdigit() is False:
-            while len(input) % 4 != 0:
-                input += '0'
-            t = re.findall('....', input)
-            for s in t:
-                matrix_big.append(s)
-                matrix_little.append(s[::-1])
-        else:
-            i = 0
-            t = ''
-            while i < 3:
-                t += '0'
-                i += 1
-            t += str(input)
-            matrix_big.append(t)
-            matrix_little.append(t)
+    # Print the data
+    def print_data(self, data):
+        data = list(data)
+        string = ""
+        for letter in data:
+            string += letter + "   "
+        print(string)
 
-    print("Big Endian")
-    for string in matrix_big:
-        print("[" + string + "]")
-    print("\n")
-    print("Little Endian")
-    for string in matrix_little:
-        print("[" + string + "]")
+    def to_big(self, data):
+        data = self.add_zeros(data)
+        self.big_matrix = self.to_4byte(data)
+        for index in self.big_matrix:
+            self.print_data(index)
+
+    def to_little(self, data):
+        data = self.add_zeros(data)
+        self.little_matrix = self.to_4byte(data)
+        for index in self.little_matrix:
+            self.print_data(index[::-1])
+
+    def add_zeros(self, data):
+        ctr = 0
+        while ctr < len(data) % 4 != 0:
+            data += "0"
+            ctr += 1
+        return data
+
+    def to_4byte(self, data):
+        start = 0
+        end = 0
+        data_array = []
+        while end < len(data):
+            end = start + 4
+            byte_string = data[start:end:]
+            data_array.append(byte_string)
+            start = end
+        print(data_array)
+        return data_array
+
+
+b = ByteOrdering()
+text_data = b.read()
+print("BIG ENDIAN FORMAT")
+for line in text_data:
+    b.to_big(line)
+
+print("LITTLE ENDIAN FORMAT")
+for line in text_data:
+    b.to_little(line)
